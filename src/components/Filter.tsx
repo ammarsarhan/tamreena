@@ -1,14 +1,21 @@
-import { Hash, BicepsFlexed, Timer, Goal } from "lucide-react"
 import { ReactNode } from "react"
+import { Hash, BicepsFlexed, Timer, Goal } from "lucide-react"
 import Select from "./Select"
 
-export function FilterButton ({children}: {
-    children: ReactNode
+export function FilterButton ({children, label} : {
+    children: ReactNode,
+    label: string
 }) {
     return (
-        <button className="text-gray-700 hover:bg-gray-100 transition-all p-2 rounded-md">
-            {children}
-        </button>
+        <div className="relative flex-center group">
+            <button className="text-gray-700 hover:bg-gray-100 transition-all p-2 rounded-md">
+                {children}
+            </button>
+            <div className="absolute -bottom-11 bg-black text-white text-xs p-2 text-nowrap rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <span>{label}</span>
+            </div>
+            <div className="absolute -bottom-3 border-l-8 border-r-8 border-b-8 border-transparent border-b-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+        </div>
     )
 }
 
@@ -33,16 +40,16 @@ export default function Filter () {
                     </div>
                 </div>
                 <div className="flex items-center gap-x-4 pl-6 border-l-[1px]">
-                    <FilterButton>
+                    <FilterButton label="Number of exercises">
                         <Hash className="w-5 h-5"/>
                     </FilterButton>
-                    <FilterButton>
+                    <FilterButton label="Select muscules">
                         <BicepsFlexed className="w-5 h-5"/>
                     </FilterButton>
-                    <FilterButton>
+                    <FilterButton label="Workout duration">
                         <Timer className="w-5 h-5"/>
                     </FilterButton>
-                    <FilterButton>
+                    <FilterButton label="Set goals">
                         <Goal className="w-5 h-5"/>
                     </FilterButton>
                 </div>

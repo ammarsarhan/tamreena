@@ -1,16 +1,18 @@
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router";
 import App from './views/App.tsx';
-import './assets/styles/index.css';
+import { BrowserRouter, Routes, Route } from "react-router";
+import ReactDOM from "react-dom/client";
 import Navigation from "./components/Navigation.tsx";
+import './assets/styles/index.css';
 
 const root = document.getElementById("root");
 
 ReactDOM.createRoot(root!).render(
   <BrowserRouter>
-    <Navigation/>
-    <Routes>
-      <Route path="/app" element={<App/>} />
-    </Routes>
+    <div className="flex flex-col h-screen">
+      <Navigation/>
+      <Routes>
+        <Route path="/app" element={<App/>} />
+      </Routes>
+    </div>
   </BrowserRouter>
 );

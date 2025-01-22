@@ -32,7 +32,7 @@ export default function Filter () {
                         <input type="checkbox" name="supersets"/>
                     </div>
                 </div>
-                <div className="flex items-center gap-x-8 pl-6 border-l-[1px]">
+                <div className="flex items-center gap-x-4 pl-6 border-l-[1px]">
                     <FilterButton>
                         <Hash className="w-5 h-5"/>
                     </FilterButton>

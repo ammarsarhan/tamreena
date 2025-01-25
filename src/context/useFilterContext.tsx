@@ -1,8 +1,9 @@
-import { createContext, useContext, ReactNode, useReducer, useState, useEffect } from "react";
-import { FilterOverlay } from "../components/Filter";
-import { buttonStyle } from "../components/Button";
+import { createContext, useContext, ReactNode, useReducer, useState, FormEvent } from "react";
 import { IntensityType, SupersetType, QuantityType, MusculesType, DurationType, GoalType, musclesList } from "../utils/types/filter";
 import { Minus, Plus } from "lucide-react";
+import { FilterOverlay } from "../components/Filter";
+import { buttonStyle } from "../components/Button";
+import Select from "../components/Select";
 
 type ActiveOverlayType = "quantity" | "muscles" | "duration" | "goal";
 type FilterContextType = {
@@ -111,9 +112,9 @@ const MusclesOverlay = () => {
     const MusclesOverlayItem = ({label, type, onClick} : {label: string, type: "append" | "pop" | "disabled", onClick?: () => void}) => {
         if (type == "disabled") {
             return (
-                <button className="text-sm border-[1px] px-4 py-2 rounded-md cursor-pointer bg-gray-100">
+                <div className="text-sm border-[1px] px-4 py-2 rounded-md bg-gray-100">
                     {label}
-                </button>
+                </div>
             )
         }
 
@@ -183,6 +184,57 @@ const MusclesOverlay = () => {
     );
 };
 
+const DurationOverlay = () => {
+    const context = useFilterContext();
+
+    const options = {
+        label: "Set duration",
+        description: "Choose the desired duration of your workout session.",
+    };
+
+    return (
+        <FilterOverlay options={options}>
+            <div className="mt-4 flex gap-x-2 w-full">
+                <Select 
+                    value={context.data.duration} 
+                    onChange={(e: FormEvent<HTMLSelectElement>) => context.actions.setDuration(e.currentTarget.value as DurationType)}
+                    className="w-full"
+                >
+                    <option value="Short">Short {"(< 1hr)"}</option>
+                    <option value="Moderate">Moderate {"(< 1hr 30mins)"}</option>
+                    <option value="Long">Long {"(< 2hrs)"}</option>
+                </Select>
+            </div>
+        </FilterOverlay>
+    );
+};
+
+const GoalOverlay = () => {
+    const context = useFilterContext();
+
+    const options = {
+        label: "Set goal",
+        description: "Choose the desired goal of your workout session.",
+    };
+
+    return (
+        <FilterOverlay options={options}>
+            <div className="mt-4 flex gap-x-2 w-full">
+                <Select 
+                    value={context.data.goal} 
+                    onChange={(e: FormEvent<HTMLSelectElement>) => context.actions.setGoal(e.currentTarget.value as GoalType)}
+                    className="w-full text-center"
+                >
+                    <option value="Hypertrophy">Hypertrophy</option>
+                    <option value="Endurance">Endurance</option>
+                    <option value="Strength">Strength</option>
+                    <option value="Fat Loss">Fat Loss</option>
+                </Select>
+            </div>
+        </FilterOverlay>
+    );
+};
+
 export function FilterContextProvider({ children } : { children: ReactNode }) {
     const {
         intensity, superset, quantity, muscles, duration, goal,
@@ -196,9 +248,9 @@ export function FilterContextProvider({ children } : { children: ReactNode }) {
             case "muscles":
                 return <MusclesOverlay/>
             case "duration":
-                return <span>Set Duration</span>
+                return <DurationOverlay/>
             case "goal":
-                return <span>Set Goal</span>
+                return <GoalOverlay/>
             default:
                 return null
         }

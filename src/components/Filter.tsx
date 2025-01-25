@@ -1,7 +1,8 @@
-import { ReactNode } from "react"
+import { FormEvent, InputHTMLAttributes, ReactNode } from "react"
 import { Hash, BicepsFlexed, Timer, Goal, Bookmark, X } from "lucide-react"
 import { useFilterContext } from "../context/useFilterContext"
 import Select from "./Select"
+import { IntensityType, SupersetType } from "../utils/types/filter"
 
 export function FilterButton ({
     children,
@@ -64,7 +65,10 @@ export default function Filter () {
                 <div className="flex items-center gap-x-6 px-6 border-l-[1px] text-sm">
                     <div className="flex items-center gap-x-3">
                         <span>Intensity</span>
-                        <Select value={context.data.intensity} onChange={() => console.log("hewar")}>
+                        <Select 
+                            value={context.data.intensity} 
+                            onChange={(e: FormEvent<HTMLSelectElement>) => context.actions.setIntensity(e.currentTarget.value as IntensityType)}
+                        >
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
@@ -76,6 +80,8 @@ export default function Filter () {
                         <input
                             type="checkbox" 
                             name="supersets"
+                            checked={context.data.superset}
+                            onChange={(e: FormEvent<HTMLInputElement>) => context.actions.setSuperset(e.currentTarget.checked)}
                         />
                     </div>
                 </div>

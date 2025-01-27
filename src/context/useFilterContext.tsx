@@ -1,7 +1,8 @@
-import { createContext, useContext, ReactNode, useReducer, useState, FormEvent } from "react";
+import { createContext, useContext, ReactNode, useReducer, useState, FormEvent, useEffect } from "react";
 import { IntensityType, SupersetType, DurationType, GoalType, MuscleList, MuscleType } from "../utils/types/filter";
 import { Minus, Plus } from "lucide-react";
 import { FilterOverlay } from "../components/Filter";
+
 import Select from "../components/Select";
 
 type ActiveOverlayType = | "muscles" | "duration" | "goal";
@@ -12,7 +13,8 @@ type FilterContextType = {
         muscles: MuscleType[],
         duration: DurationType,
         goal: GoalType,
-        isOverlayOpen: boolean
+        isOverlayOpen: boolean,
+        changed: boolean
     },
     actions: {
         setIntensity: (value: IntensityType) => void
@@ -21,7 +23,8 @@ type FilterContextType = {
         popMuscle: (value: number) => void
         setDuration: (value: DurationType) => void
         setGoal: (value: GoalType) => void
-        setActiveOverlay: (overlay: ActiveOverlayType | null) => void
+        setActiveOverlay: (overlay: ActiveOverlayType | null) => void,
+        setChanged: (changed: boolean) => void
     }
 }
 
@@ -212,7 +215,12 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
     );
 
     const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+    const [changed, setChanged] = useState(false);
 
+    useEffect(() => {
+        setChanged(true);
+    }, [intensity, superset, muscles, duration, goal])
+    
     const addMuscle = (muscle: MuscleType) => {
         if (muscles.length >= 5 || muscles.includes(muscle)) {
             return;
@@ -247,7 +255,8 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
                     muscles: muscles,
                     duration: duration,
                     goal: goal,
-                    isOverlayOpen: isOverlayOpen
+                    isOverlayOpen: isOverlayOpen,
+                    changed: changed
                 },
                 actions: {
                     setIntensity: (value: IntensityType) => setIntensity(value),
@@ -256,7 +265,8 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
                     popMuscle: (value: number) => removeMuscle(value),
                     setDuration: (value: DurationType) => setDuration(value),
                     setGoal: (value: GoalType) => setGoal(value),
-                    setActiveOverlay: setActiveOverlay
+                    setActiveOverlay: setActiveOverlay,
+                    setChanged: (value: boolean) => setChanged(value)
                 }
             }}
         >

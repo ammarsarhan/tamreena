@@ -33,17 +33,18 @@ export default function Grid() {
 
     useEffect(() => {
         const match = JSON.stringify(previous) == JSON.stringify(current);
-        
+
         if (match) {
             handleGenerate();
         }
     }, [previous, current, handleGenerate])
 
     useEffect(() => {
-        if (!options.isOverlayOpen) {
+        if (!options.isOverlayOpen && options.changed) {
             handleGenerate();
+            context.actions.setChanged(false);
         }
-    }, [handleGenerate, options]);
+    }, [context.actions, handleGenerate, options]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,7 +57,7 @@ export default function Grid() {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [handleGenerate, options]);
+    }, [handleGenerate]);
 
     return (
         <div className="bg-gray-50 grid grid-cols-1 h-full md:grid-cols-2">

@@ -1,28 +1,43 @@
+import { randomInt, randomlySelectFromArray } from './random';
 import { exercises, ExerciseType } from './types/exercise';
 import { IntensityType, SupersetType, MuscleType, DurationType, GoalType } from './types/filter';
 
 export function queryExercises(targetMuscle: MuscleType) {
     const targetExercises = exercises.filter(exercise => {
         return exercise.musclesTargeted.some(el => {
-            return el.muscle.name === targetMuscle.name && el.activation === "High"
+            return el.muscle.name === targetMuscle.name && (el.activation === "High" || el.activation === "Moderate")
         })
     })
 
     return targetExercises;
 }
 
-export function randomlySelectFromArray(arr: ExerciseType[], quantity: number): ExerciseType[] {
-    if (quantity > arr.length) {
-        throw new Error("Cannot select more elements than array length.");
+function calculateSelection (total: number, large: number) : {large: number, small: number} {
+    if (total <= 2) {
+        if (large != 0) {
+            return {
+                large: randomInt(3, 4),
+                small: randomInt(1, 2)
+            }
+        }
+        
+        return {
+            large: 0,
+            small: 3
+        }
     }
 
-    const shuffled = [...arr];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    if (large > 1) {
+        return {
+            large: randomInt(1, 2),
+            small: randomInt(1, 2)
+        }
     }
-
-    return shuffled.slice(0, quantity);
+    
+    return {
+        large: 2,
+        small: 1
+    }
 }
 
 export function generateWorkout (options: {
@@ -37,28 +52,22 @@ export function generateWorkout (options: {
     const largeMuscles = options.muscles.filter(muscle => muscle.size === "Large");
     const smallMuscles = options.muscles.filter(muscle => muscle.size === "Small");
 
-    const durationFactor = {
-        short: 6,
-        moderate: 10,
-        long: 14
-    };
-
-    const totalExercises = durationFactor.long;
-    const largeMuscleExercises = Math.round((totalExercises * 2) / 3);
-    const smallMuscleExercises = totalExercises - largeMuscleExercises;
+    const totalQuantity = options.muscles.length;
+    const largeQuantity = largeMuscles.length;
 
     largeMuscles.forEach(muscle => {
+        const selection = calculateSelection(totalQuantity, largeQuantity).large;
         const targetExercises = queryExercises(muscle);
-        const quantity = Math.min(largeMuscleExercises / largeMuscles.length, targetExercises.length);
-        list.push(...randomlySelectFromArray(targetExercises, Math.floor(quantity)));
+        const product = randomlySelectFromArray(targetExercises, selection);
+        list.push(...product);
     });
-
+    
     smallMuscles.forEach(muscle => {
+        const selection = calculateSelection(totalQuantity, largeQuantity).small;
         const targetExercises = queryExercises(muscle);
-        const quantity = Math.min(smallMuscleExercises / smallMuscles.length, targetExercises.length);
-        list.push(...randomlySelectFromArray(targetExercises, Math.floor(quantity)));
+        const product = randomlySelectFromArray(targetExercises, selection);
+        list.push(...product);
     });
 
-    console.log("Generated new list!");
     return list;
 }

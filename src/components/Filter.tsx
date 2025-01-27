@@ -1,8 +1,8 @@
-import { FormEvent, InputHTMLAttributes, ReactNode } from "react"
-import { Hash, BicepsFlexed, Timer, Goal, Bookmark, X } from "lucide-react"
+import { FormEvent, ReactNode } from "react"
+import { BicepsFlexed, Timer, Goal, Bookmark, X } from "lucide-react"
 import { useFilterContext } from "../context/useFilterContext"
 import Select from "./Select"
-import { IntensityType, SupersetType } from "../utils/types/filter"
+import { IntensityType } from "../utils/types/filter"
 
 export function FilterButton ({
     children,
@@ -59,7 +59,7 @@ export default function Filter () {
     const context = useFilterContext();
 
     return (
-        <div className="flex items-center justify-between px-6 py-3 border-b-[1px]">
+        <div className="hidden md:flex items-center justify-between px-6 py-3 border-b-[1px]">
             <span className="text-sm text-gray-500">Press the spacebar to generate a new set of exercises.</span>
             <div className="flex items-center">
                 <div className="flex items-center gap-x-6 px-6 border-l-[1px] text-sm">
@@ -88,12 +88,6 @@ export default function Filter () {
                 <div className="flex items-center gap-x-4 pl-6 border-l-[1px]">
                     <FilterButton label="Save workout">
                         <Bookmark className="w-5 h-5"/>
-                    </FilterButton>
-                    <FilterButton 
-                        label="Number of exercises"
-                        onClick={() => context.actions.setActiveOverlay("quantity")}
-                    >
-                        <Hash className="w-5 h-5"/>
                     </FilterButton>
                     <FilterButton 
                         label="Select muscules"

@@ -10,15 +10,15 @@ export default function Navigation () {
             </div>
             <div className="flex items-center gap-x-4">
                 <div className="flex items-center gap-x-4 text-sm">
-                    <NavLink to="/trainers" className="flex items-center gap-x-2">
+                    <NavLink to="/trainers" className="hidden md:flex items-center gap-x-2">
                         Trainers <ChevronDown className="w-3 h-3"/>
                     </NavLink>
-                    <NavLink to="/company" className="flex items-center gap-x-2">
+                    <NavLink to="/company" className="hidden md:flex items-center gap-x-2">
                         Company <ChevronDown className="w-3 h-3"/>
                     </NavLink>
-                    <NavLink to="/plans/pro" className="text-blue-700 font-medium">Go Pro</NavLink>
+                    <NavLink to="/plans/pro" className="hidden sm:block text-blue-700 font-medium">Go Pro</NavLink>
                 </div>
-                <NavLink to="/search" className="p-2 mr-2">
+                <NavLink to="/search" className="hidden sm:block p-2 mr-2">
                     <Search className="w-4 h-4"/>
                 </NavLink>
                 <div className="flex items-center gap-x-3">

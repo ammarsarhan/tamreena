@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import ReactDOM from "react-dom/client";
 import Navigation from "./components/Navigation.tsx";
 import './assets/styles/index.css';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const root = document.getElementById("root");
 

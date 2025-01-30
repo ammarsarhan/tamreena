@@ -1,16 +1,20 @@
 import { createContext, useContext, ReactNode, useReducer, useState, FormEvent, useEffect } from "react";
-import { IntensityType, SupersetType, DurationType, GoalType, MuscleList, MuscleType } from "../utils/types/filter";
-import { Minus, Plus } from "lucide-react";
 import { FilterOverlay } from "../components/Filter";
+import { Minus, Plus } from "lucide-react";
+import { IntensityType, SupersetType, DurationType, GoalType } from "../utils/types/filter";
+import { MuscleType } from "../utils/types/muscle";
 
 import Select from "../components/Select";
+import { fetchMuscles } from "../firebase/db";
 
 type ActiveOverlayType = | "muscles" | "duration" | "goal";
 type FilterContextType = {
+    loading: boolean,
     data: {
         intensity: IntensityType,
         superset: SupersetType,
         muscles: MuscleType[],
+        selectedMuscles: MuscleType[],
         duration: DurationType,
         goal: GoalType,
         isOverlayOpen: boolean,
@@ -31,22 +35,14 @@ type FilterContextType = {
 export const useFilterOptions = () => {
     const [intensity, setIntensity] = useState<IntensityType>("Medium");
     const [superset, setSuperset] = useState<SupersetType>(false);
-    const [muscles, setMuscles] = useState<MuscleType[]>([
-        {
-            name: "Chest",
-            size: "Large"
-        },
-        {
-            name: "Triceps",
-            size: "Small"
-        }
-    ]);
     const [duration, setDuration] = useState<DurationType>("Moderate");
     const [goal, setGoal] = useState<GoalType>("Hypertrophy");
+    const [muscles, setMuscles] = useState<MuscleType[]>([]);
+    const [selectedMuscles, setSelectedMuscles] = useState<MuscleType[]>([]);
 
     return {
-        intensity, superset, muscles, duration, goal,
-        setIntensity, setSuperset, setMuscles, setDuration, setGoal
+        intensity, superset, muscles, selectedMuscles, duration, goal,
+        setIntensity, setSuperset, setMuscles, setSelectedMuscles, setDuration, setGoal
     }
 }
 
@@ -64,8 +60,7 @@ export function useFilterContext() {
 
 const MusclesOverlay = () => {
     const context = useFilterContext();
-
-    const availableQuantity = 5 - context.data.muscles.length;
+    const availableQuantity = 5 - context.data.selectedMuscles.length;
 
     const options = {
         label: "Select muscles",
@@ -97,7 +92,7 @@ const MusclesOverlay = () => {
         )
     }
 
-    const selected = new Set(context.data.muscles.map(el => el.name));
+    const selected = new Set(context.data.selectedMuscles.map(el => el.name));
 
     return (
         <FilterOverlay options={options}>
@@ -105,7 +100,7 @@ const MusclesOverlay = () => {
                 <span className="block text-sm text-left mb-3">Selected muscles</span>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-[1px] p-4 rounded-md w-full max-w-96 max-h-60 overflow-y-scroll">
                     {
-                        context.data.muscles.map((el, index) => {
+                        context.data.selectedMuscles.map((el, index) => {
                             return (
                                 <MusclesOverlayItem 
                                     label={el.name} 
@@ -122,7 +117,7 @@ const MusclesOverlay = () => {
                 <span className="block text-sm text-left mb-3">Available muscles ({availableQuantity})</span>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-[1px] p-4 rounded-md w-full max-w-96 max-h-60 overflow-y-scroll">
                     {
-                        MuscleList.map((el, index) => {
+                        context.data.muscles.map((el, index) => {
                             const match = selected.has(el.name);
 
                             return (
@@ -194,8 +189,8 @@ const GoalOverlay = () => {
 
 export function FilterContextProvider({ children }: { children: ReactNode }) {
     const {
-        intensity, superset, muscles, duration, goal,
-        setIntensity, setSuperset, setMuscles, setDuration, setGoal
+        intensity, superset, muscles, selectedMuscles, duration, goal,
+        setIntensity, setSuperset, setMuscles, setSelectedMuscles, setDuration, setGoal
     } = useFilterOptions();
 
     const [overlay, updateOverlay] = useReducer(
@@ -214,31 +209,45 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
         null
     );
 
+    const [isLoading, setIsLoading] = useState(true);
     const [isOverlayOpen, setIsOverlayOpen] = useState(false);
     const [changed, setChanged] = useState(false);
 
     useEffect(() => {
+        const getMuscles = async () => {
+            const data = await fetchMuscles();
+
+            setMuscles(data);
+            setSelectedMuscles([data[0], data[1]]);
+            
+            setIsLoading(false);
+        }
+
+        getMuscles();
+    }, [setMuscles, setSelectedMuscles]);
+
+    useEffect(() => {
         setChanged(true);
-    }, [intensity, superset, muscles, duration, goal])
+    }, [intensity, superset, muscles, duration, goal]);
     
     const addMuscle = (muscle: MuscleType) => {
-        if (muscles.length >= 5 || muscles.includes(muscle)) {
+        if (selectedMuscles.length >= 5 || selectedMuscles.includes(muscle)) {
             return;
         }
-
-        const temp = [...muscles];
+        
+        const temp = [...selectedMuscles];
         temp.push(muscle);
-        setMuscles([...temp]);
+        setSelectedMuscles([...temp]);
     };
-
+    
     const removeMuscle = (index: number) => {
-        if (index > muscles.length - 1 || muscles.length === 1) {
+        if (index > selectedMuscles.length - 1 || selectedMuscles.length === 1) {
             return;
         }
 
-        const temp = [...muscles];
+        const temp = [...selectedMuscles];
         temp.splice(index, 1);
-        setMuscles([...temp]);
+        setSelectedMuscles([...temp]);
     };
 
     const setActiveOverlay = (overlay: ActiveOverlayType | null) => {
@@ -249,10 +258,12 @@ export function FilterContextProvider({ children }: { children: ReactNode }) {
     return (
         <FilterContext.Provider
             value={{
+                loading: isLoading,
                 data: {
                     intensity: intensity,
                     superset: superset,
                     muscles: muscles,
+                    selectedMuscles: selectedMuscles,
                     duration: duration,
                     goal: goal,
                     isOverlayOpen: isOverlayOpen,

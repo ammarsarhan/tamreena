@@ -37,7 +37,7 @@ export const useFilterOptions = () => {
             size: "Large"
         },
         {
-            name: "Biceps",
+            name: "Triceps",
             size: "Small"
         }
     ]);

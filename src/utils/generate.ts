@@ -13,29 +13,10 @@ export function queryExercises(targetMuscle: MuscleType) {
 }
 
 function calculateSelection (total: number, large: number) : {large: number, small: number} {
-    if (total <= 2) {
-        if (large != 0) {
-            return {
-                large: randomInt(3, 4),
-                small: randomInt(1, 2)
-            }
-        }
-        
-        return {
-            large: 0,
-            small: 3
-        }
-    }
-
-    if (large > 1) {
-        return {
-            large: randomInt(1, 2),
-            small: randomInt(1, 2)
-        }
-    }
+    console.log(total, large);
     
     return {
-        large: 2,
+        large: randomInt(3, 4),
         small: 1
     }
 }

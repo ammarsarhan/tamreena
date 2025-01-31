@@ -2,8 +2,7 @@ import Skeleton from "react-loading-skeleton";
 import { useFilterContext } from "../context/useFilterContext";
 import { ExerciseType } from "../utils/types/exercise";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { generateWorkout, simulateWorkoutRequest } from "../utils/generate";
-import { fetchExercises } from "../firebase/db";
+import { fetchExercisesList } from "../utils/generate";
 
 export function GridCardSkeleton () {
     return (
@@ -25,18 +24,23 @@ export default function Grid() {
     const filter = context.data;
 
     const [loading, setLoading] = useState(true);
+    const [exercises, setExercises] = useState<ExerciseType[]>([]);
     const [current, setCurrent] = useState<ExerciseType[]>([]);
-    
+
     const previous = useRef(filter);
 
     const getWorkout = useCallback(async () => {
         setLoading(true);
 
-        const workout = await generateWorkout(filter.selectedMuscles, {...filter});
-        setCurrent(workout);
+        const workout = await fetchExercisesList(filter.selectedMuscles, filter.muscles);
+        setExercises(workout);
+
+        if (current.length == 0) {
+            setCurrent(workout);
+        }
 
         setLoading(false);
-    }, [filter])
+    }, [current.length, filter.muscles, filter.selectedMuscles])
 
     useEffect(() => {
         if (!filter.isOverlayOpen) {
@@ -64,7 +68,7 @@ export default function Grid() {
     return (
         <div className="bg-gray-50 grid grid-cols-1 h-full md:grid-cols-2">
             {
-                current.map((el, index) => {
+                exercises.map((el, index) => {
                     return <GridCard data={el} key={index}/>
                 })
             }

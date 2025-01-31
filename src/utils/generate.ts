@@ -59,25 +59,19 @@ import { ExerciseType } from "./types/exercise";
 //     return list;
 // }
 
-export async function generateWorkout (
-    targetMuscles: MuscleType[], 
-    options: {intensity: IntensityType, superset: SupersetType, duration: DurationType, goal: GoalType}
-) : Promise<ExerciseType[]> {
-    const largeMuscles = targetMuscles.filter(muscle => muscle.size == "Large");
-    const smallMuscles = targetMuscles.filter(muscle => muscle.size == "Small");
-
-    // const quantity = targetMuscles.length;
-    // const largeQuantity = largeMuscles.length;
+export async function fetchExercisesList (targets: MuscleType[], muscles: MuscleType[]) : Promise<ExerciseType[]> {
+    const largeMuscles = targets.filter(muscle => muscle.size == "Large");
+    const smallMuscles = targets.filter(muscle => muscle.size == "Small");
 
     const exercises: ExerciseType[] = [];
 
     for await (const muscle of largeMuscles) {
-        const res = await fetchExercises(muscle.id);
+        const res = await fetchExercises(muscle, muscles);
         exercises.push(...res);
     }
     
     for await (const muscle of smallMuscles) {
-        const res = await fetchExercises(muscle.id);
+        const res = await fetchExercises(muscle, muscles);
         exercises.push(...res);
     }
 

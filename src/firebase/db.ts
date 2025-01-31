@@ -47,31 +47,26 @@ export async function fetchMuscles() : Promise<MuscleType[]> {
     return arr;
 }
 
-export async function fetchExercises(id: string): Promise<ExerciseType[]> {
+export async function fetchExercises(target: MuscleType, muscles: MuscleType[]): Promise<ExerciseType[]> {
     const colRef = collection(db, "exercises");    
-    const idRef = doc(db, `/muscles/${id}`);
+    const idRef = doc(db, `/muscles/${target.id}`);
 
     const req = query(colRef, where("musclesTargeted", "array-contains", { muscle: idRef, activation: "High" }));
     const res = await getDocs(req);
 
     const promises = res.docs.map(async doc => {
         const data = doc.data();
-        
-        const musclePromises = data.musclesTargeted.map(async (el: MuscleRequestType) => {
-            const id = el.muscle.id;
-            const muscle = await fetchMuscle(id);
+        const musclesTargeted: { muscle: MuscleType, activation: "High" | "Moderate" | "Low" }[] = [];
 
-            return {
-                muscle: muscle,
-                activation: el.activation
-            };
-        });
-
-        const muscles = await Promise.all(musclePromises);
+        muscles.map(el => {
+            if (el.id == target.id) {
+                musclesTargeted.push({ muscle: el, activation: "High" });
+            }
+        })
 
         const exercise: ExerciseType = {
             name: data.name,
-            musclesTargeted: muscles,
+            musclesTargeted: musclesTargeted,
             exerciseType: data.exerciseType,
             priority: data.priority,
             baseSets: data.baseSets

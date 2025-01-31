@@ -1,70 +1,72 @@
-import { useCallback, useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
 import { useFilterContext } from "../context/useFilterContext";
-import { generateWorkout } from "../utils/generate";
 import { ExerciseType } from "../utils/types/exercise";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { generateWorkout, simulateWorkoutRequest } from "../utils/generate";
+import { fetchExercises } from "../firebase/db";
+
+export function GridCardSkeleton () {
+    return (
+        <Skeleton height={"100%"} className="p-2 !rounded-none"/>
+    )
+}
 
 export function GridCard({ data }: { data: ExerciseType }) {
     return (
         <div className="flex-center border-b-[1px] border-r-[1px] bg-white">
-            {data.name}
+            { data.name }
         </div>
     );
 }
 
 export default function Grid() {
     const context = useFilterContext();
-    const options = context.data;
 
+    const filter = context.data;
+
+    const [loading, setLoading] = useState(true);
     const [current, setCurrent] = useState<ExerciseType[]>([]);
-    const [previous, setPrevious] = useState<ExerciseType[]>([]);
+    
+    const previous = useRef(filter);
 
-    const handleGenerate = useCallback(() => {
-        const workout = generateWorkout(options);
+    const getWorkout = useCallback(async () => {
+        setLoading(true);
 
-        setCurrent((temp) => {
-            if (temp.length > 0) {
-                setPrevious(temp);
+        const workout = await generateWorkout(filter.selectedMuscles, {...filter});
+        setCurrent(workout);
+
+        setLoading(false);
+    }, [filter])
+
+    useEffect(() => {
+        if (!filter.isOverlayOpen) {
+            const prev = previous.current;
+            const match = prev.intensity !== filter.intensity || prev.superset !== filter.superset || prev.duration !== filter.duration || prev.goal !== filter.goal || JSON.stringify(prev.selectedMuscles) !== JSON.stringify(filter.selectedMuscles);
+
+            if (match) {
+                getWorkout();
             }
 
-            return workout;
-        });
-
-    }, [options]);
-
-    useEffect(() => {
-        const match = JSON.stringify(previous) == JSON.stringify(current);
-
-        if (match) {
-            handleGenerate();
+            previous.current = { ...filter };
         }
-    }, [previous, current, handleGenerate])
+    }, [filter, getWorkout])
 
-    useEffect(() => {
-        if (!options.isOverlayOpen && options.changed) {
-            handleGenerate();
-            context.actions.setChanged(false);
-        }
-    }, [context.actions, handleGenerate, options]);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === " " || e.code === "Space") {
-                handleGenerate();
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [handleGenerate]);
+    if (context.loading || loading) {
+        return (
+            <div className="bg-white grid grid-cols-1 h-full md:grid-cols-2">
+                {
+                    Array(5).fill(<GridCardSkeleton/>)
+                }
+            </div>
+        )
+    }
 
     return (
         <div className="bg-gray-50 grid grid-cols-1 h-full md:grid-cols-2">
             {
-                current.map((el, index) => (
-                    <GridCard data={el} key={index} />
-                ))
+                current.map((el, index) => {
+                    return <GridCard data={el} key={index}/>
+                })
             }
         </div>
     );

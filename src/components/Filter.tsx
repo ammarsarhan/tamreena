@@ -26,10 +26,10 @@ export function FilterButton ({
             >
                 {children}
             </button>
-            <div className="absolute -bottom-11 bg-black text-white text-xs p-2 text-nowrap rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="z-50 absolute -bottom-11 bg-black text-white text-xs p-2 text-nowrap rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <span>{label}</span>
             </div>
-            <div className="absolute -bottom-3 border-l-8 border-r-8 border-b-8 border-transparent border-b-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            <div className="z-50 absolute -bottom-3 border-l-8 border-r-8 border-b-8 border-transparent border-b-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         </div>
     );
 }
@@ -65,7 +65,7 @@ export default function Filter () {
     const isLoading = context.loading;
 
     return (
-        <div className="fixed bottom-0 w-full border-t-[1px] sm:border-t-0 sm:static flex items-center justify-between px-6 py-3 border-b-[1px]">
+        <div className="sm:border-t-0 sm:static flex items-center justify-between px-6 py-3 border-b-[1px]">
             <span className="lg:block hidden text-sm text-gray-500">Press the spacebar to generate a new set of exercises.</span>
             <div className="flex flex-wrap items-center justify-between md:justify-end gap-x-2 gap-y-4 w-full">
                 <div className="hidden md:flex items-center gap-x-6 px-6 border-l-[1px] text-sm">

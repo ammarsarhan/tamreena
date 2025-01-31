@@ -2,7 +2,7 @@ import Skeleton from "react-loading-skeleton";
 import { useFilterContext } from "../context/useFilterContext";
 import { ExerciseType } from "../utils/types/exercise";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchExercisesList } from "../utils/generate";
+import { fetchExerciseList } from "../utils/generate";
 
 export function GridCardSkeleton () {
     return (
@@ -29,18 +29,14 @@ export default function Grid() {
 
     const previous = useRef(filter);
 
-    const getWorkout = useCallback(async () => {
+    const getInitialWorkout = useCallback(async () => {
         setLoading(true);
 
-        const workout = await fetchExercisesList(filter.selectedMuscles, filter.muscles);
-        setExercises(workout);
-
-        if (current.length == 0) {
-            setCurrent(workout);
-        }
+        const data = await fetchExerciseList(filter.selectedMuscles, filter.muscles);
+        setExercises(data);
 
         setLoading(false);
-    }, [current.length, filter.muscles, filter.selectedMuscles])
+    }, [filter.selectedMuscles, filter.muscles])
 
     useEffect(() => {
         if (!filter.isOverlayOpen) {
@@ -48,18 +44,20 @@ export default function Grid() {
             const match = prev.intensity !== filter.intensity || prev.superset !== filter.superset || prev.duration !== filter.duration || prev.goal !== filter.goal || JSON.stringify(prev.selectedMuscles) !== JSON.stringify(filter.selectedMuscles);
 
             if (match) {
-                getWorkout();
+                getInitialWorkout();
             }
 
             previous.current = { ...filter };
         }
-    }, [filter, getWorkout])
+    }, [filter, getInitialWorkout])
 
     if (context.loading || loading) {
         return (
             <div className="bg-white grid grid-cols-1 h-full md:grid-cols-2">
                 {
-                    Array(5).fill(<GridCardSkeleton/>)
+                    Array(5).fill(0).map((_, index) => (
+                        <GridCardSkeleton key={index} />
+                    ))
                 }
             </div>
         )

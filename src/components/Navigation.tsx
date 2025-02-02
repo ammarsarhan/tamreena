@@ -4,7 +4,7 @@ import { Search, ChevronDown } from "lucide-react";
 
 export default function Navigation () {
     return (
-        <nav className="flex items-center justify-between px-6 py-5 border-b-[1px]">
+        <nav className="flex items-center justify-between px-6 py-4 border-b-[1px]">
             <div>
                 <NavLink to="/" className="font-semibold text-lg">Tamreena</NavLink>
             </div>
@@ -16,7 +16,7 @@ export default function Navigation () {
                     <NavLink to="/company" className="hidden md:flex items-center gap-x-2">
                         Company <ChevronDown className="w-3 h-3"/>
                     </NavLink>
-                    <NavLink to="/plans/pro" className="hidden sm:block text-blue-700 font-medium">Go Pro</NavLink>
+                    <NavLink to="/plans" className="hidden sm:block text-blue-700 font-medium">Go Pro</NavLink>
                 </div>
                 <NavLink to="/search" className="hidden sm:block p-2 mr-2">
                     <Search className="w-4 h-4"/>

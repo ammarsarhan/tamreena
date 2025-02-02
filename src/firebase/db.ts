@@ -1,7 +1,7 @@
 import { app } from "./main";
 import { collection, doc, DocumentData, getDoc, getDocs, getFirestore, query, QuerySnapshot, where } from "firebase/firestore";
 import { MuscleType } from "../utils/types/muscle";
-import { ExerciseMuscleType, ExerciseType } from "../utils/types/exercise";
+import { ActivationType, ExerciseMuscleType, ExerciseType } from "../utils/types/exercise";
 
 const db = getFirestore(app);
 
@@ -42,15 +42,25 @@ export async function fetchMuscles() : Promise<MuscleType[]> {
     return arr;
 }
 
-async function parseExercisesRequest(data: QuerySnapshot<DocumentData, DocumentData>, target: MuscleType, muscles: MuscleType[]) {
+async function parseExercisesRequest(data: QuerySnapshot<DocumentData, DocumentData>, muscles: MuscleType[]) {
     const promises = data.docs.map(async doc => {
         const data = doc.data();
         const musclesTargeted: ExerciseMuscleType[] = [];
-
-        muscles.map(el => {
-            if (el.id == target.id) {
-                musclesTargeted.push({ muscle: el, activation: "High" });
+        
+        data.musclesTargeted.forEach(el => {
+            const match = muscles.find(muscle => el.muscle.id == muscle.id);
+            
+            if (match) {
+                musclesTargeted.push({
+                    muscle: match,
+                    activation: el.activation
+                });
             }
+        })
+
+        const sortingOrder = { High: 0, Moderate: 1, Low: 2 };
+        musclesTargeted.sort((a, b) => {
+            return sortingOrder[a.activation] - sortingOrder[b.activation]
         })
 
         const exercise: ExerciseType = {
@@ -77,11 +87,11 @@ export async function fetchExercises(target: MuscleType, muscles: MuscleType[]):
 
     const exercises: ExerciseType[] = [];
 
-    for await (const el of ["High", "Moderate", "Low"]) {
-        const request = query(colRef, where("musclesTargeted", "array-contains", { muscle: idRef, activation: el }));
+    for await (const activation of ["High", "Moderate", "Low"]) {
+        const request = query(colRef, where("musclesTargeted", "array-contains", { muscle: idRef, activation: activation }));
         const response = await getDocs(request);
 
-        const data = await parseExercisesRequest(response, target, muscles);
+        const data = await parseExercisesRequest(response, muscles);
 
         if (data.length != 0) {
             exercises.push(...data);

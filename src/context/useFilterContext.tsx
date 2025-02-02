@@ -150,9 +150,9 @@ const DurationOverlay = () => {
                     onChange={(e: FormEvent<HTMLSelectElement>) => context.actions.setDuration(e.currentTarget.value as DurationType)}
                     className="w-full"
                 >
-                    <option value="Short">Short {"(< 1hr)"}</option>
-                    <option value="Moderate">Moderate {"(< 1hr 30mins)"}</option>
-                    <option value="Long">Long {"(< 2hrs)"}</option>
+                    <option value="Short">Short {"(< 45mins)"}</option>
+                    <option value="Moderate">Moderate {"(< 1hr)"}</option>
+                    <option value="Long">Long {"(< 1hr 30mins)"}</option>
                 </Select>
             </div>
         </FilterOverlay>

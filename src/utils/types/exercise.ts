@@ -1,8 +1,10 @@
 import { MuscleType } from "./muscle";
 
+export type ActivationType = "Low" | "Moderate" | "High";
+
 export interface ExerciseMuscleType {
     muscle: MuscleType,
-    activation: "Low" | "Moderate" | "High"
+    activation: ActivationType
 }
 
 export interface ExerciseType {

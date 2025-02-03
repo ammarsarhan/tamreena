@@ -1,7 +1,7 @@
 import { getAuth } from 'firebase/auth';
 import { app } from './main';
 
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
 export async function createUserWithCredentials(email: string, password: string) {
     

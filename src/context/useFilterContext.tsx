@@ -50,7 +50,7 @@ export function useFilterContext() {
     const context = useContext(FilterContext);
 
     if (!context) {
-        throw new Error("useFilterContext must be used within an AuthContextProvider");
+        throw new Error("useFilterContext must be used within an FilterContextProvider");
     }
 
     return context;

@@ -8,18 +8,21 @@ import Navigation from "./components/Navigation.tsx";
 
 import './assets/styles/index.css';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { AuthContextProvider } from "./context/useAuthContext.tsx";
 
 const root = document.getElementById("root");
 
 ReactDOM.createRoot(root!).render(
   <BrowserRouter>
-    <main className="flex flex-col h-screen">
-      <Navigation/>
-      <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/app" element={<App/>} />
-        <Route path="/plans" element={<Plans/>} />
-      </Routes>
-    </main>
+    <AuthContextProvider>
+      <main className="flex flex-col h-screen">
+        <Navigation/>
+        <Routes>
+          <Route path="/" element={<Home/>} />
+          <Route path="/app" element={<App/>} />
+          <Route path="/plans" element={<Plans/>} />
+        </Routes>
+      </main>
+    </AuthContextProvider>
   </BrowserRouter>
 );

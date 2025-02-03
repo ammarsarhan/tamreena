@@ -1,20 +1,24 @@
 import { NavLink } from "react-router"
 import formatInEGP from "../utils/currency"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from "../assets/styles/plans.module.css"
 
 interface PlanCardProps {
     type: "Free" | "Pro" | "Enterprise",
     price: number,
     description: string,
     actionLink: string,
+    actionText: string,
     label: string,
-    features: string[]
+    features: string[],
+    notice?: string
 }
 
-export function PlanCard ({type, price, description, actionLink, label, features} : PlanCardProps) {
+export function PlanCard ({type, price, description, actionLink, actionText, label, features, notice} : PlanCardProps) {
     return (
-        <div className="border-[1px] p-6 rounded-xl max-w-96">
+        <div className="relative border-[1px] p-6 rounded-xl max-w-96">
+            {
+                notice &&
+                <div className="py-2 px-3 text-xs bg-blue-800 text-white rounded-2xl border-[1px] absolute -top-3 -right-3">{notice}</div>
+            }
             <div className="flex flex-col gap-y-4 border-b-[1px] pb-4">
                 <h3 className="text-lg">{type}</h3>
                 <div className="flex flex-col gap-y-1">
@@ -24,7 +28,7 @@ export function PlanCard ({type, price, description, actionLink, label, features
                 </div>
                 <p className="text-sm">{description}</p>
                 <div className="my-3 w-full">
-                    <NavLink to={actionLink} className="border-[1px] border-blue-800 text-blue-800 hover:bg-blue-50 hover:bg-opacity-20 transition-all px-4 py-3 rounded-md text-sm block text-center">{price === 0 ? "Start for Free" : "Upgrade Now"}</NavLink>
+                    <NavLink to={actionLink} className="border-[1px] border-blue-800 text-blue-800 hover:bg-blue-50 hover:bg-opacity-20 transition-all px-4 py-3 rounded-md text-sm block text-center">{actionText}</NavLink>
                 </div>
             </div>
             <div className="pt-6">
@@ -49,9 +53,9 @@ export default function Plans () {
                 </div>
             </header>
             <div className="flex-center flex-wrap gap-4 my-4">
-                <PlanCard type="Free" price={0} description="Perfect for beginners looking to explore the platform with essential features at no cost." actionLink="/app" label="Free, forever." features={["Up to 50 generations/day.", "Save workouts.", "Search exercises."]}/>
-                <PlanCard type="Pro" price={50} description="Designed for fitness enthusiasts and professionals who need unlimited access and premium support." actionLink="/plans/pro" label="Most popular choice!" features={["Unlimited generations.", "No ads.", "Priority support."]}/>
-                <PlanCard type="Enterprise" price={2000} description="Built for gyms and businesses that need scalable, enterprise-grade solutions with powerful features." actionLink="/plans/enterprise" label="Large. Powerful." features={["Feature 1", "Feature 2", "Feature 3"]}/>
+                <PlanCard type="Free" price={0} description="Perfect for beginners looking to explore the platform with essential features at no cost." actionLink="/app" actionText="Start for Free" label="Free, forever." features={["Up to 50 generations/day.", "Save workouts.", "Search exercises."]}/>
+                <PlanCard type="Pro" price={50} description="Designed for fitness enthusiasts and professionals who need unlimited access and premium support." actionLink="/plans/pro" actionText="Upgrade Now" label="Most popular choice!" features={["Unlimited generations.", "No ads.", "Priority support."]}/>
+                <PlanCard type="Enterprise" price={2000} description="Built for gyms and businesses that need scalable, enterprise-grade solutions with powerful features." actionLink="/plans/enterprise" actionText="Discover More" label="Large. Powerful." features={["Feature 1", "Feature 2", "Feature 3"]} notice="Coming Soon!"/>
             </div>
         </div>
     )

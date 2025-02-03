@@ -1,8 +1,12 @@
 import { NavLink } from "react-router";
 import { buttonStyle } from "./Button";
 import { Search, ChevronDown } from "lucide-react";
+import useAuthContext from "../context/useAuthContext";
+import ProfileAvatar from "./ProfileAvatar";
 
 export default function Navigation () {
+    const auth = useAuthContext();
+
     return (
         <nav className="flex items-center justify-between px-6 py-4 border-b-[1px]">
             <div>
@@ -21,10 +25,14 @@ export default function Navigation () {
                 <NavLink to="/search" className="hidden sm:block p-2 mr-2">
                     <Search className="w-4 h-4"/>
                 </NavLink>
-                <div className="flex items-center gap-x-3">
-                    <NavLink to="/auth/log-in" className={buttonStyle.primary}>Log In</NavLink>
-                    <NavLink to="/auth/sign-up" className={buttonStyle.outline}>Sign Up</NavLink>
-                </div>
+                {
+                    auth.user ?
+                    <ProfileAvatar/> :
+                    <div className="flex items-center gap-x-3">
+                        <NavLink to="/auth/log-in" className={buttonStyle.primary}>Log In</NavLink>
+                        <NavLink to="/auth/sign-up" className={buttonStyle.outline}>Sign Up</NavLink>
+                    </div>
+                }
             </div>
         </nav>
     )

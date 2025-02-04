@@ -3,7 +3,8 @@ import { User } from "firebase/auth";
 import { auth } from "../firebase/auth";
 
 interface AuthContextType {
-    user: User | null
+    user: User | null,
+    loading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,14 +21,20 @@ export default function useAuthContext () {
 
 export function AuthContextProvider ({ children } : { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        return auth.onAuthStateChanged(setUser);
+        const unsubscribe = auth.onAuthStateChanged((res) => {
+            setUser(res);
+            setLoading(false);
+        });
+
+        return unsubscribe;
     }, [])
 
     return (
-        <AuthContext.Provider value={{user: user}}>
-            {children}
+        <AuthContext.Provider value={{user: user, loading: loading}}>
+            {!loading && children}
         </AuthContext.Provider>
     )
 }

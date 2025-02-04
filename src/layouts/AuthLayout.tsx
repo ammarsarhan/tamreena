@@ -1,12 +1,9 @@
-import { Routes, Route } from "react-router"
-import Login from "../views/Login"
-import Signup from "../views/Signup"
+import { Outlet } from "react-router";
 
 export default function AuthLayout() {
     return (
-        <Routes>
-            <Route path="/auth/log-in" element={<Login/>} />
-            <Route path="/auth/sign-up" element={<Signup/>} />
-        </Routes>
+        <main className="grid grid-cols-3 h-screen">
+            <Outlet/>
+        </main>
     )
 }

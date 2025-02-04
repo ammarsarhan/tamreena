@@ -1,8 +1,18 @@
 import { NavLink } from "react-router";
 import { buttonStyle } from "./Button";
 import { Search, ChevronDown } from "lucide-react";
+
 import useAuthContext from "../context/useAuthContext";
 import ProfileAvatar from "./ProfileAvatar";
+
+export function AuthNavigation() {
+    return (
+        <nav className="absolute top-0 left-0 px-6 py-5 w-full flex items-center justify-between">
+            <NavLink to="/" className="font-semibold text-lg">Tamreena</NavLink>
+            <NavLink to="/" className="text-sm font-medium text-blue-800 hover:underline">← Go back</NavLink>
+        </nav>
+    )
+}
 
 export default function Navigation () {
     const auth = useAuthContext();

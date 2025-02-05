@@ -1,7 +1,7 @@
 import { app } from "./main";
 import { collection, doc, DocumentData, getDoc, getDocs, getFirestore, query, QuerySnapshot, where } from "firebase/firestore";
 import { MuscleType } from "../utils/types/muscle";
-import { ActivationType, ExerciseMuscleType, ExerciseType } from "../utils/types/exercise";
+import { ExerciseMuscleType, ExerciseType } from "../utils/types/exercise";
 
 const db = getFirestore(app);
 
@@ -97,6 +97,16 @@ export async function fetchExercises(target: MuscleType, muscles: MuscleType[]):
             exercises.push(...data);
         }
     }
+
+    return exercises;
+}
+
+export async function fetchAllExercises() : Promise<ExerciseType[]> {
+    const colRef = collection(db, "exercises");
+    const req = await getDocs(colRef);
+
+    const muscles = await fetchMuscles();
+    const exercises = await parseExercisesRequest(req, muscles);
 
     return exercises;
 }
